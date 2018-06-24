@@ -1,0 +1,3 @@
+#!/bin/bash
+
+export NICKNAME=$(echo {{ inventory_hostname }} | cut -d"." -f1)

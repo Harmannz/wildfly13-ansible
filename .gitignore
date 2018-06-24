@@ -1,0 +1,7 @@
+*.retry
+.vagrant
+*/geerlingguy.apache
+*.iml
+*target
+*.idea
+.DS_Store

@@ -1,0 +1,45 @@
+---
+- name: Update hosts file
+  copy:
+    src: hosts
+    dest: /etc/hosts
+
+- name: Install rng-tools
+  package:
+    name: rng-tools
+    state: present
+
+- name: Enable and start rngd service
+  service:
+    name: rngd
+    daemon_reload: yes
+    enabled: yes
+    state: started
+
+- name: Copy bash prompt
+  copy:
+    src: bash-prompt-xterm
+    dest: /etc/sysconfig/bash-prompt-xterm
+    mode: 0755
+
+- name: Copy bashrc
+  copy:
+    src: bashrc
+    dest: /etc/bashrc
+    mode: 0755
+
+- name: Configure prompt.sh
+  template:
+    src: prompt.sh.j2
+    dest: /etc/profile.d/prompt.sh
+    mode: 0755
+
+- name: Install vim
+  package:
+    name: vim
+    state: present
+
+- name: Instal unzip
+  package:
+    name: unzip
+    state: present

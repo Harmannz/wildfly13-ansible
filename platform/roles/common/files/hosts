@@ -1,0 +1,5 @@
+127.0.0.1   vagrant.apache.fun.dis.nz  vagrant localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+
+10.255.251.2 vagrant.wildfly.fun.dis.nz
+10.255.251.3 web.vagrant.wildfly.fun.dis.nz

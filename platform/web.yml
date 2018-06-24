@@ -1,0 +1,122 @@
+- hosts: web
+  become: yes
+  user: vagrant
+  roles:
+    - common
+
+- hosts: web
+  become: yes
+  vars:
+    host_ip: "{{ hostvars[inventory_hostname].ansible_host }}"
+  pre_tasks:
+    - name: Ensure python OpenSSL dependencies are installed.
+      yum:
+        name: "{{ item }}"
+        state: present
+      with_items:
+         - python-pip
+
+    - name: Ensure python OpenSSL is installed.
+      pip:
+        name: "{{ item }}"
+        state: present
+      with_items:
+         - pyOpenSSL
+
+    - name: Generate certificate private keys.
+      openssl_privatekey:
+        path: /etc/pki/tls/private/ca.key
+        size: 2048
+        state: present
+
+    - name: Generate certificate csr.
+      openssl_csr:
+        common_name: apachefun
+        path: /etc/pki/tls/private/ca.csr
+        privatekey_path: /etc/pki/tls/private/ca.key
+        state: present
+
+    - name: Generate Self-Signed Certificate.
+      openssl_certificate:
+        csr_path: /etc/pki/tls/private/ca.csr
+        privatekey_path: /etc/pki/tls/private/ca.key
+        path: /etc/pki/tls/certs/ca.crt
+        provider: selfsigned
+        state: present
+
+  roles:
+    - role: geerlingguy.apache
+      apache_ports_configuration_items: [] #disable global listening port
+      apache_restart_state: stopped
+      apache_state: stopped
+      apache_vhosts_filename: app-vhost.conf
+      apache_listen_ip: "{{ host_ip }}"
+      apache_global_vhost_settings: |
+        {{ ansible_managed | comment }}
+        Listen {{ host_ip }}:80
+        Listen {{ host_ip }}:443
+      apache_vhosts:
+        - servername: "{{ inventory_hostname }}"
+          serveralias: "{{ inventory_hostname }}"
+          extra_parameters: |
+            # redirect all traffic through https
+            RewriteEngine On
+            RewriteCond %{HTTPS} off
+            RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
+      apache_vhosts_ssl:
+        - servername: "{{ inventory_hostname }}"
+          serveralias: "{{ inventory_hostname }}"
+          certificate_file: /etc/pki/tls/certs/ca.crt
+          certificate_key_file: /etc/pki/tls/private/ca.key
+          extra_parameters: |
+            Header append X-UA-Compatible: IE=edge
+
+            ProxyPreserveHost On
+            # forward along the protocol that was used to access the server. 
+            # header contains the original protocol (the forwarded protocol) of the request that the proxy received.
+            RequestHeader set X-Forwarded-Proto "https" env=HTTPS
+            RequestHeader set X-Forwarded-Port "443" env=HTTPS
+
+            # ensuring that regular HTTP requests will never be honored on port 443
+            <Location />
+              SSLRequireSSL
+            </Location>
+
+            # Vagrant isn't protected by the gatekeeper, needs to have a regex for include optional to work
+            IncludeOptional conf/access.con[f]
+
+        # ProxyPass /cds http://{{ cds_host }}:8080/cds
+        # ProxyPassReverse /cds http://{{ cds_host }}:8080/cds
+
+        # Header set Access-Control-Allow-Origin "https://{{ test_host }}"
+
+        # Rewrite specific cookies to have a prefix, and remove the prefix on the way back in.
+        # Note, the csfcfc cookie is used for flash messaged in JSF.
+        # Header edit Set-Cookie "^(APP_ID|csfcfc)=([^;]*).*[pP]ath=([^;]*);" "{{ cookie_prefix }}_$1=$2; Domain={{ cookie_domain }}; Path=$3; Secure; HttpOnly"
+        # RequestHeader edit* Cookie {{ cookie_prefix }}_([^=]*)=([^;]) "$1=$2"
+
+        # <Location "/ui">
+        #     ErrorDocument 403 /ui/errors/forbidden
+        # </Location>
+  post_tasks:
+    - name: Disable default listen.
+      lineinfile:
+        dest: /etc/httpd/conf/httpd.conf
+        regexp: '^(Listen.*)'
+        line: '# \1'
+        backrefs: yes
+
+    - name: Remove httpd default files.
+      file:
+        path: "{{ item }}"
+        state: absent
+      with_items:
+        - /etc/httpd/conf.d/welcome.conf
+        - /etc/httpd/conf.d/ssl.conf
+        - /etc/httpd/conf.d/autoindex.conf
+        - /etc/httpd/conf.d/userdir.conf
+
+    - name: Apache restarted.
+      service:
+        name: httpd
+        state: restarted
