@@ -1,0 +1,25 @@
+---
+- name:  Install Java
+  yum:
+    name=java-1.8.0-openjdk
+    state=present
+
+- name: Download wildfly tarball for jboss.org
+  get_url:
+    url: https://download.jboss.org/wildfly/13.0.0.Final/wildfly-13.0.0.Final.tar.gz
+    dest: /tmp/wildfly-13.0.0.Final.tar.gz
+
+#- name: Create a new wildfly folder
+#  file:
+#    path: /opt/wildfly
+#    state: "{{ items}}"
+#  with_items:
+#    - absent
+#    - directory
+#
+#- name: Extract wildfly into wildfly folder
+#  unarchive:
+#    src: /tmp/wildfly-13.0.0.Final.tar.gz
+#    dest: /opt/wildfly
+#    extra_opts: ['--strip-components=1']
+#    copy: no
