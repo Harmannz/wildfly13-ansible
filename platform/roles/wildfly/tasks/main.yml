@@ -9,17 +9,41 @@
     url: https://download.jboss.org/wildfly/13.0.0.Final/wildfly-13.0.0.Final.tar.gz
     dest: /tmp/wildfly-13.0.0.Final.tar.gz
 
-#- name: Create a new wildfly folder
-#  file:
-#    path: /opt/wildfly
-#    state: "{{ items}}"
-#  with_items:
-#    - absent
-#    - directory
-#
-#- name: Extract wildfly into wildfly folder
-#  unarchive:
-#    src: /tmp/wildfly-13.0.0.Final.tar.gz
-#    dest: /opt/wildfly
-#    extra_opts: ['--strip-components=1']
-#    copy: no
+- name: Create a new wildfly flolder
+  file:
+    path: /opt/wildfly
+    state: "{{item}}"
+  with_items:
+    - absent
+    - directory
+
+- name: Extract wildfly into wildfly folder
+  unarchive:
+    src: /tmp/wildfly-13.0.0.Final.tar.gz
+    dest: /opt/wildfly
+    extra_opts: ['--strip-components=1']
+    copy: no
+
+- name: Copy wildfly run script
+  template:
+    src: run.sh.j2
+    dest: /opt/wildfly/bin/run.sh
+    mode: 0755
+
+- name: Copy wildfly service
+  template:
+    src: wildfly.service.j2
+    dest: /usr/lib/systemd/system/wildfly.service
+    mode: 0755
+
+- name: add wildfly user
+  command: "/opt/wildfly/bin/add-user.sh admin password"
+
+- name: Add java_home to wildfly config
+  lineinfile:
+    dest: /opt/wildfly/bin/standalone.conf
+    regexp: '^[#]?JAVA_HOME='
+    line: 'JAVA_HOME=/usr/lib/jvm/jre-1.8.0-openjdk'
+
+#Setting JAVA_HOME environment variable is probably a good idea too.
+

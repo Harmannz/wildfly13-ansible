@@ -71,7 +71,7 @@
               <artifactId>wildfly-maven-plugin</artifactId>
               <version>1.2.1.Final</version>
               <configuration>
-                <hostname>app.vagrant.wildfly.fun.dis.nz</hostname>
+                <hostname>web.vagrant.wildfly.fun.dis.nz</hostname>
                 <username>admin</username>
                 <password>password</password>
                 <!-- Putting admin and password is bad practise, but this is vagrant so all good. -->

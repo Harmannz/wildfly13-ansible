@@ -1,0 +1,12 @@
+[Unit]
+Description=WildFly application server
+After=network.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+ExecStart=/opt/wildfly/bin/run.sh
+
+[Install]
+WantedBy=multi-user.target
