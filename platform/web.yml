@@ -78,6 +78,8 @@
 
             # Vagrant isn't protected by the gatekeeper, needs to have a regex for include optional to work
             IncludeOptional conf/access.con[f]
+            ProxyPass / http://127.0.0.1:9990
+            ProxyPassReverse / http://127.0.0.1:9990
 
         # ProxyPass /cds http://{{ cds_host }}:8080/cds
         # ProxyPassReverse /cds http://{{ cds_host }}:8080/cds

@@ -1,8 +1,8 @@
 ---
 - name:  Install Java
   yum:
-    name=java-1.8.0-openjdk
-    state=present
+    name: java-1.8.0-openjdk
+    state: present
 
 - name: Download wildfly tarball for jboss.org
   get_url:
@@ -45,5 +45,10 @@
     regexp: '^[#]?JAVA_HOME='
     line: 'JAVA_HOME=/usr/lib/jvm/jre-1.8.0-openjdk'
 
+- name: restart wildfly (move this to notify)
+  service:
+    name: wildfly
+    state: started
+    enabled: yes
 #Setting JAVA_HOME environment variable is probably a good idea too.
 
