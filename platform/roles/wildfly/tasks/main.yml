@@ -50,5 +50,19 @@
     name: wildfly
     state: started
     enabled: yes
-#Setting JAVA_HOME environment variable is probably a good idea too.
+
+- name: copy wildfly configuration file
+  template:
+    src: wildfly.cli.j2
+    dest: /opt/wildfly/standalone/configuration/configure.cli
+
+# Make this step idempotent i.e. don't run if already set.
+- name: configure wildfly
+  command: "/opt/wildfly/bin/jboss-cli.sh --connect --file=/opt/wildfly/standalone/configuration/configure.cli"
+
+- name: restart wildfly (move this to notify)
+  service:
+    name: wildfly
+    state: started
+    enabled: yes
 
