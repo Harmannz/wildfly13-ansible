@@ -79,8 +79,8 @@
             # Vagrant isn't protected by the gatekeeper, needs to have a regex for include optional to work
             IncludeOptional conf/access.con[f]
 
-            ProxyPass /hello http://{{ app_host }}:8080/app
-            ProxyPassReverse /hello http://{{ app_host }}:8080/app
+            ProxyPass /app http://{{ app_host }}:8080/app
+            ProxyPassReverse /app http://{{ app_host }}:8080/app
 
   post_tasks:
     - name: Disable default listen.
