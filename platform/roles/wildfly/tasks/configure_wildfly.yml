@@ -1,6 +1,6 @@
 ---
 - name: add wildfly user
-  command: "/opt/wildfly/bin/add-user.sh admin password"
+  command: "/opt/wildfly/bin/add-user.sh {{wildfly_admin_user}} {{wildfly_admin_pwd}}"
 
 - name: Add java_home to wildfly config
   lineinfile:

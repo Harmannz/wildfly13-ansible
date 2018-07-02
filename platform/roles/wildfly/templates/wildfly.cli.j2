@@ -1,3 +1,3 @@
 /system-property=ee8.preview.mode:add(value=true)
-/interface=public:write-attribute(name=inet-address, value=${jboss.bind.address.management:app.vagrant.wildfly.fun.dis.nz})
-/interface=management:write-attribute(name=inet-address, value=${jboss.bind.address.management:app.vagrant.wildfly.fun.dis.nz})
+/interface=public:write-attribute(name=inet-address, value=${jboss.bind.address.management:{{app_host}}})
+/interface=management:write-attribute(name=inet-address, value=${jboss.bind.address.management:{{app_host}}})

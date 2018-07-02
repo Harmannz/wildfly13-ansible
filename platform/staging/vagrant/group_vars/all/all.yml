@@ -1,1 +1,3 @@
 ---
+app_host: app.vagrant.wildfly.fun.dis.nz
+wildfly_admin_user: admin
