@@ -19,10 +19,5 @@
 # Make this step idempotent i.e. don't run if already set.
 - name: configure wildfly
   command: "/opt/wildfly/bin/jboss-cli.sh --connect --file=/opt/wildfly/standalone/configuration/configure.cli"
-
-- name: restart wildfly (move this to notify)
-  service:
-    name: wildfly
-    state: restarted
-    enabled: yes
-
+  notify:
+    - Restart wildfly

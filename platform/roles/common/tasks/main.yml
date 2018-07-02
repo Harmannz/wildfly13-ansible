@@ -39,7 +39,7 @@
     name: vim
     state: present
 
-- name: Instal unzip
+- name: Install unzip
   package:
     name: unzip
     state: present

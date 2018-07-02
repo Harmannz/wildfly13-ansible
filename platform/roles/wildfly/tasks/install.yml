@@ -9,12 +9,12 @@
     url: https://download.jboss.org/wildfly/13.0.0.Final/wildfly-13.0.0.Final.tar.gz
     dest: /tmp/wildfly-13.0.0.Final.tar.gz
 
-- name: create wildfly group
+- name: Create wildfly group
   group:
     name: wildfly
     state: present
 
-- name: create wildfly user
+- name: Create wildfly user
   user:
     group: wildfly
     name: wildfly
@@ -31,6 +31,7 @@
     path: /opt/wildfly
     state: directory
     group: wildfly
+    owner: wildfly
 
 - name: Extract wildfly into wildfly directory
   unarchive:
@@ -39,6 +40,7 @@
     extra_opts: ['--strip-components=1']
     copy: no
     group: wildfly
+    owner: wildfly
 
 - name: Copy wildfly run script
   template:
@@ -52,7 +54,6 @@
     dest: /usr/lib/systemd/system/wildfly.service
     mode: 0755
 
-# notify start wildfly
 - name: Restart wildfly
   service:
     name: wildfly
