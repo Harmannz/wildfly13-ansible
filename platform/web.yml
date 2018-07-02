@@ -79,19 +79,9 @@
             # Vagrant isn't protected by the gatekeeper, needs to have a regex for include optional to work
             IncludeOptional conf/access.con[f]
 
-        # ProxyPass /cds http://{{ cds_host }}:8080/cds
-        # ProxyPassReverse /cds http://{{ cds_host }}:8080/cds
+            ProxyPass /hello http://app.vagrant.wildfly.fun.dis.nz:8080/app
+            ProxyPassReverse /hello http://app.vagrant.wildfly.fun.dis.nz:8080/app
 
-        # Header set Access-Control-Allow-Origin "https://{{ test_host }}"
-
-        # Rewrite specific cookies to have a prefix, and remove the prefix on the way back in.
-        # Note, the csfcfc cookie is used for flash messaged in JSF.
-        # Header edit Set-Cookie "^(APP_ID|csfcfc)=([^;]*).*[pP]ath=([^;]*);" "{{ cookie_prefix }}_$1=$2; Domain={{ cookie_domain }}; Path=$3; Secure; HttpOnly"
-        # RequestHeader edit* Cookie {{ cookie_prefix }}_([^=]*)=([^;]) "$1=$2"
-
-        # <Location "/ui">
-        #     ErrorDocument 403 /ui/errors/forbidden
-        # </Location>
   post_tasks:
     - name: Disable default listen.
       lineinfile:

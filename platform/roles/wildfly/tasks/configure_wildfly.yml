@@ -1,0 +1,28 @@
+---
+- name: add wildfly user
+  command: "/opt/wildfly/bin/add-user.sh admin password"
+
+- name: Add java_home to wildfly config
+  lineinfile:
+    dest: /opt/wildfly/bin/standalone.conf
+    regexp: '^[#]?JAVA_HOME='
+    line: 'JAVA_HOME=/usr/lib/jvm/jre-1.8.0-openjdk'
+
+- name: copy wildfly configuration file
+  template:
+    src: wildfly.cli.j2
+    dest: /opt/wildfly/standalone/configuration/configure.cli
+    owner: wildfly
+    group: wildfly
+    mode: 0640
+
+# Make this step idempotent i.e. don't run if already set.
+- name: configure wildfly
+  command: "/opt/wildfly/bin/jboss-cli.sh --connect --file=/opt/wildfly/standalone/configuration/configure.cli"
+
+- name: restart wildfly (move this to notify)
+  service:
+    name: wildfly
+    state: restarted
+    enabled: yes
+
