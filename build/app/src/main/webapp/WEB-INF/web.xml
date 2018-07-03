@@ -20,7 +20,7 @@
         <param-value>Development</param-value>
     </context-param>
     <welcome-file-list>
-        <welcome-file>index</welcome-file>
+        <welcome-file>index.xhtml</welcome-file>
     </welcome-file-list>
     <error-page>
         <error-code>404</error-code>
