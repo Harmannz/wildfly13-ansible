@@ -1,4 +1,4 @@
 #!/bin/sh
 JBOSS_HOME=/opt/wildfly/
 
-${JBOSS_HOME}/bin/standalone.sh $@
+${JBOSS_HOME}/bin/standalone.sh -bmanagement={{ hostvars[inventory_hostname].ansible_host }} $@

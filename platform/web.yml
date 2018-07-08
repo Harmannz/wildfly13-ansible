@@ -3,40 +3,20 @@
   vars:
     host_ip: "{{ hostvars[inventory_hostname].ansible_host }}"
   pre_tasks:
-    - name: Ensure python OpenSSL dependencies are installed.
-      yum:
-        name: "{{ item }}"
-        state: present
-      with_items:
-         - python-pip
+    - name: Copy vagrant key
+      copy:
+        src: vagrant.key
+        dest: /etc/pki/tls/private/vagrant.key
+        owner: root
+        group: root
 
-    - name: Ensure python OpenSSL is installed.
-      pip:
-        name: "{{ item }}"
-        state: present
-      with_items:
-         - pyOpenSSL
 
-    - name: Generate certificate private keys.
-      openssl_privatekey:
-        path: /etc/pki/tls/private/ca.key
-        size: 2048
-        state: present
-
-    - name: Generate certificate csr.
-      openssl_csr:
-        common_name: apachefun
-        path: /etc/pki/tls/private/ca.csr
-        privatekey_path: /etc/pki/tls/private/ca.key
-        state: present
-
-    - name: Generate Self-Signed Certificate.
-      openssl_certificate:
-        csr_path: /etc/pki/tls/private/ca.csr
-        privatekey_path: /etc/pki/tls/private/ca.key
-        path: /etc/pki/tls/certs/ca.crt
-        provider: selfsigned
-        state: present
+    - name: Copy vagrant cert
+      copy:
+        src: vagrant.crt
+        dest: /etc/pki/tls/certs/vagrant.crt
+        owner: root
+        group: root
 
   roles:
     - role: geerlingguy.apache
@@ -60,8 +40,8 @@
       apache_vhosts_ssl:
         - servername: "{{ inventory_hostname }}"
           serveralias: "{{ inventory_hostname }}"
-          certificate_file: /etc/pki/tls/certs/ca.crt
-          certificate_key_file: /etc/pki/tls/private/ca.key
+          certificate_file: /etc/pki/tls/certs/vagrant.crt
+          certificate_key_file: /etc/pki/tls/private/vagrant.key
           extra_parameters: |
             Header append X-UA-Compatible: IE=edge
 

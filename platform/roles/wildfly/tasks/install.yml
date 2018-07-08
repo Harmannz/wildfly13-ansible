@@ -4,11 +4,6 @@
     name: java-1.8.0-openjdk
     state: present
 
-- name: Download wildfly tarball for jboss.org
-  get_url:
-    url: https://download.jboss.org/wildfly/13.0.0.Final/wildfly-13.0.0.Final.tar.gz
-    dest: /tmp/wildfly-13.0.0.Final.tar.gz
-
 - name: Create wildfly group
   group:
     name: wildfly
@@ -20,18 +15,25 @@
     name: wildfly
     state: present
 
-- name: Delete wildfly directory
-  file:
-    path: /opt/wildfly
-    state: absent
-    group: wildfly
+# - name: Delete wildfly directory
+#   file:
+#     path: /opt/wildfly
+#     state: absent
+#     group: wildfly
 
-- name: Create a new wildfly directory
+- name: Create wildfly directory
   file:
     path: /opt/wildfly
     state: directory
     group: wildfly
     owner: wildfly
+  register: wildfly_exists
+
+- name: Download wildfly tarball from jboss.org
+  get_url:
+    url: https://download.jboss.org/wildfly/13.0.0.Final/wildfly-13.0.0.Final.tar.gz
+    dest: /tmp/wildfly-13.0.0.Final.tar.gz
+  when: wildfly_exists.changed
 
 - name: Extract wildfly into wildfly directory
   unarchive:
@@ -41,6 +43,7 @@
     copy: no
     group: wildfly
     owner: wildfly
+  when: wildfly_exists.changed
 
 - name: Copy wildfly run script
   template:
@@ -54,7 +57,7 @@
     dest: /usr/lib/systemd/system/wildfly.service
     mode: 0755
 
-- name: Restart wildfly
+- name: Start wildfly
   service:
     name: wildfly
     state: started
