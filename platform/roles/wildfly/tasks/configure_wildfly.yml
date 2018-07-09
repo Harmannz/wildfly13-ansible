@@ -8,6 +8,13 @@
     regexp: '^[#]?JAVA_HOME='
     line: 'JAVA_HOME=/usr/lib/jvm/jre-1.8.0-openjdk'
 
+- name: Copy truststore file
+  copy:
+    src: truststore.jks
+    dest: /opt/wildfly/bin/truststore.jks
+    owner: wildfly
+    group: wildfly
+
 - name: copy wildfly configuration file
   template:
     src: wildfly.cli.j2

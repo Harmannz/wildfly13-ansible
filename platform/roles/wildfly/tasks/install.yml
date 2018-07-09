@@ -15,11 +15,6 @@
     name: wildfly
     state: present
 
-# - name: Delete wildfly directory
-#   file:
-#     path: /opt/wildfly
-#     state: absent
-#     group: wildfly
 
 - name: Create wildfly directory
   file:
