@@ -8,6 +8,14 @@ end-if
 if (outcome != success) of /system-property=javax.net.ssl.trustStorePassword:read-resource
     /system-property=javax.net.ssl.trustStorePassword:add(value={{ truststore_pwd }})
 end-if
+if (outcome != success) of /subsystem=logging/file-handler=appLog:read-resource
+    /subsystem=logging/file-handler=appLog:add(level=ALL, file={relative-to="jboss.server.log.dir",path="app.log"},append=false, autoflush=true)
+end-if
+
+if (outcome != success) of /subsystem=logging/logger=io.github.harmannz:read-resource
+    /subsystem=logging/logger=io.github.harmannz:add(use-parent-handlers=false, handlers=["appLog"])
+end-if
+
 /interface=public:write-attribute(name=inet-address, value=${jboss.bind.address.management:{{ hostvars[inventory_hostname].ansible_host }}})
 /interface=management:write-attribute(name=inet-address, value=${jboss.bind.address.management:{{ hostvars[inventory_hostname].ansible_host }}})
 reload

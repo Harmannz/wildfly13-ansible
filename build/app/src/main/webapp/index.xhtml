@@ -1,6 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html">
+<html xmlns:h="http://java.sun.com/jsf/html">
 <h:head>
     <title>Hello Greeting</title>
 </h:head>
@@ -9,6 +9,10 @@
     <p>
         <h:outputText value="#{hello.world}"/>
     </p>
+    <h:form>
+        <h:commandButton value="Say Hi!" action="#{hello.submit()}"/>
+    </h:form>
+    <h:outputText value="#{hello.response}"/>
 </h:body>
 
 </html>
