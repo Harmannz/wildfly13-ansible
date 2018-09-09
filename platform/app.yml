@@ -3,3 +3,8 @@
   become: yes
   roles:
     - wildfly
+    - wildfly-app
+    - role: geerlingguy.mysql
+      mysql_user_name: "{{ db_user }}"
+      mysql_user_passwqord: "{{ db_password }}"
+    - mysql-app

@@ -1,3 +1,13 @@
 ---
 app_host: app.vagrant.wildfly.fun.dis.nz
 wildfly_admin_user: admin
+
+db_user: vagrant
+db_password: vagrant
+
+app_db_name: example_db
+app_db_user: wildflyApp
+app_db_password: password
+
+wildfly_admin_pwd: password
+truststore_pwd: harmannz

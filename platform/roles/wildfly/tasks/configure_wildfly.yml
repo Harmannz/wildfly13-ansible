@@ -23,6 +23,5 @@
     group: wildfly
     mode: 0640
 
-# Make this step idempotent i.e. don't run if already set.
 - name: configure wildfly
   command: "/opt/wildfly/bin/jboss-cli.sh --connect --controller={{ hostvars[inventory_hostname].ansible_host }}:9990 --file=/opt/wildfly/standalone/configuration/configure.cli"

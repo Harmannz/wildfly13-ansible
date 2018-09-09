@@ -1,0 +1,19 @@
+---
+- name: Copy Databases to System
+  copy:
+    src: dump.sql
+    dest: /tmp
+
+- name: create database and table
+  mysql_db:
+    name: "{{ app_db_name }}"
+    state: import
+    target: /tmp/dump.sql
+
+- name: create app user
+  mysql_user:
+    name: "{{ app_db_user }}"
+    host: "{{ app_host }}"
+    password: "{{ app_db_password }}"
+    priv: "{{ app_db_name }}.*:SELECT,INSERT,UPDATE,DELETE,CREATE,DROP,ALTER,INDEX,GRANT"
+    state: present

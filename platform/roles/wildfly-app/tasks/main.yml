@@ -1,0 +1,34 @@
+---
+- name: Download mysql connector
+  get_url:
+    url: http://search.maven.org/remotecontent?filepath=mysql/mysql-connector-java/{{ mysql_connector_version }}/mysql-connector-java-{{ mysql_connector_version }}.jar
+    dest: /tmp/mysql-connector-java-{{ mysql_connector_version }}.jar
+
+- name: Create MySQL module
+  command: /opt/wildfly/bin/jboss-cli.sh -c --controller={{ hostvars[inventory_hostname].ansible_host }} --command="module add --name=com.mysql --resources=/tmp/mysql-connector-java-{{ mysql_connector_version }}.jar --dependencies=javax.api,javax.transaction.api"
+  register: wildfly_add_mysql_res
+  changed_when: wildfly_add_mysql_res is succeeded
+  failed_when: (wildfly_add_mysql_res is failed) and ('Module com.mysql already exists' not in wildfly_add_mysql_res.stdout)
+
+
+- name: Create CLI batch script
+  copy:
+    dest: "/tmp/datasource.cli"
+    content: |
+      if (outcome != success) of /subsystem=datasources/jdbc-driver=mysql:query
+        /subsystem=datasources/jdbc-driver=mysql:add(driver-name=mysql,driver-module-name=com.mysql,driver-xa-datasource-class-name=com.mysql.jdbc.jdbc2.optional.MysqlXADataSource)
+      end-if
+
+      if (outcome != success) of /subsystem=datasources/data-source=BookDS:query
+        data-source add --name=BookDS --driver-name=mysql --jndi-name=java:jboss/datasources/BookDS --connection-url="jdbc:mysql://{{ app_host }}:3306/{{ app_db_name }}?useUnicode=true&amp;characterEncoding=UTF-8" --user-name={{ app_db_user }} --password={{ app_db_password }} --use-ccm=false --max-pool-size=25 --blocking-timeout-wait-millis=5000 --enabled=true
+      end-if
+    mode: 0640
+
+- name: Execute CLI batch configuration
+  command: "/opt/wildfly/bin/jboss-cli.sh --connect --controller={{ hostvars[inventory_hostname].ansible_host }}:9990 --file=/tmp/datasource.cli"
+
+# handlers?
+- name: Restart wildfly
+  service:
+    name: wildfly
+    state: restarted

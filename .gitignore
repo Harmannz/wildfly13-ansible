@@ -1,6 +1,7 @@
 *.retry
 .vagrant
 *geerlingguy.apache
+*geerlingguy.mysql
 *.iml
 *target
 *.idea

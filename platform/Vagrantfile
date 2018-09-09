@@ -22,7 +22,7 @@ Vagrant.configure("2") do |config|
   # config.proxy.no_proxy = "localhost,127.0.0.1,.fun.dis.nz"
 
   config.vm.box_check_update = false
-  config.vbguest.auto_update = false
+  # config.vbguest.auto_update = false
 
   if Vagrant.has_plugin?("vagrant-cachier")
     config.cache.scope = :box
